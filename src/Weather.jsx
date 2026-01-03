@@ -24,27 +24,35 @@ export default function Weather() {
     weather:""
   });
 
+  let [error,setError] = useState(false);
   let [cityName, setCityname] = useState("");
+
+  
 
   let updateWeatherInfo = (info) =>{
     setWeatherInfo(info);
   }
 
   let getWeatherInfo = async () => {
-    let res = await fetch(`${API_URL}?q=${cityName}&appid=${API_KEY}&units=metric`);
-    let jsonResponse = await res.json();
-    console.log(jsonResponse);
-    let result = {
-      city:cityName,
-      humidity: jsonResponse.main.humidity,
-      pressure: jsonResponse.main.pressure,
-      temp: jsonResponse.main.temp,
-      tempMax: jsonResponse.main.temp_max,
-      tempMin: jsonResponse.main.temp_min,
-      weather: jsonResponse.weather[0].description,
+    try{
+      let res = await fetch(`${API_URL}?q=${cityName}&appid=${API_KEY}&units=metric`);
+      let jsonResponse = await res.json();
+      console.log(jsonResponse);
+      let result = {
+        city:cityName,
+        humidity: jsonResponse.main.humidity,
+        pressure: jsonResponse.main.pressure,
+        temp: jsonResponse.main.temp,
+        tempMax: jsonResponse.main.temp_max,
+        tempMin: jsonResponse.main.temp_min,
+        weather: jsonResponse.weather[0].description,
+      }
+      console.log(result);
+      setError(false);
+      updateWeatherInfo(result);
+    } catch(err){
+      setError(true);
     }
-    console.log(result);
-    updateWeatherInfo(result);
   }
 
   let handleInput = (event) => {
@@ -76,6 +84,7 @@ export default function Weather() {
       </form>
 
       <p>searching for {cityName}</p>
+      {error ? <p style={{color:"red"}}>City not Found</p> : <p></p>}
 
 
       <Card sx={{ maxWidth: 345 }}>
@@ -88,7 +97,12 @@ export default function Weather() {
           <Typography gutterBottom variant="h5" component="div">
             {cityName}
           </Typography>
+          <p>City : {weatherInfo.city}</p>
           <p>Temperature : {weatherInfo.temp}&deg;C</p>
+          <p>humidity : {weatherInfo.humidity}</p>
+          <p>pressure : {weatherInfo.pressure}</p>
+          <p>weather : {weatherInfo.weather}</p>
+        
           {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             Lizards are a widespread group of squamate reptiles, with over 6,000
             species, ranging across all continents except Antarctica
